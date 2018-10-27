@@ -1,0 +1,14 @@
+{
+    "providers": {
+        "awscloudformation": {
+            "AuthRoleName": "flash-20181027141010-authRole",
+            "UnauthRoleArn": "arn:aws:iam::847136656635:role/flash-20181027141010-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::847136656635:role/flash-20181027141010-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "flash-20181027141010-deployment",
+            "UnauthRoleName": "flash-20181027141010-unauthRole",
+            "StackName": "flash-20181027141010",
+            "StackId": "arn:aws:cloudformation:us-east-1:847136656635:stack/flash-20181027141010/b0d5fbf0-da2c-11e8-84d8-500c288f18d1"
+        }
+    }
+}

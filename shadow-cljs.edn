@@ -1,6 +1,9 @@
 {:dependencies [[re-frame "0.10.5"]
                 [day8.re-frame/trace "0.1.19-react16"]
                 [re-view/re-frame-simple "0.1.4"]
+                [cider/cider-nrepl "0.18.0"]
+                [bidi "2.1.4"]
+                [secretary "1.2.3"]
                 [binaryage/devtools "0.9.7"]]
 
  :source-paths ["src"]

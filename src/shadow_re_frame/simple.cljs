@@ -7,7 +7,14 @@
 
    ;; this is re-frame-trace's separate instance of re-frame
    [mranderson047.re-frame.v0v10v2.re-frame.db :as trace-db]
-   [mranderson047.re-frame.v0v10v2.re-frame.core :as trace-rf]))
+   [mranderson047.re-frame.v0v10v2.re-frame.core :as trace-rf]
+   ["../aws-exports" :default aws-exports]
+   ["aws-amplify" :default amplify]
+   ["aws-amplify-react" :refer (withAuthenticator)]
+   ))
+
+(.configure amplify aws-exports)
+
 
 ;;
 ;; For a complete introduction to `re-view.re-frame-simple`, see the readme:
@@ -40,6 +47,7 @@
                                     (.preventDefault %)
                                     (db/update-in! [:counters id] inc))}
      total
+#_     (str "foo" (js->clj aws-exports))
      [:br]
      (if (pos? total)
        (take total (repeat id))
@@ -98,7 +106,7 @@
               {:style {:margin "2rem 0 1rem"}}
               "〰️〰️〰️〰️〰️〰️〰️"])
 
-(defn root-view
+(defn root-view-2
   "Render the page"
   []
   [:div.root-layout
@@ -137,24 +145,33 @@
    [:p "👨🏻‍💻   by Matt Huebert (" [:a {:href "https://matt.is/"} "website"] ", " [:a {:href "https://www.twitter.com/mhuebert"} "twitter"] ")"]])
 
 
+
+(defn root-view-3 [props]
+  [:p (str props)]
+  )
+
+(def root-view
+(reagent/adapt-react-class
+(withAuthenticator
+ (reagent/reactify-component root-view-3) true)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Boilerplate code to get the page to render:
 
 (defn ^:export render []
-  (reagent/render [root-view]
-                  (js/document.getElementById "shadow-re-frame")))
+(reagent/render [root-view]
+(js/document.getElementById "shadow-re-frame")))
 
 (defn ^:export init []
 
-  ;; initialize the db, create an example counter
-  (db/dispatch [:initialize])
-  (db/dispatch [:new-counter])
-  ;; render to page
-  (render)
+;; initialize the db, create an example counter
+(db/dispatch [:initialize])
+(db/dispatch [:new-counter])
+;; render to page
+(render)
 
 
-  ;; open re-frame-trace panel (after a timeout, to make sure it's state has loaded)
-  (-> #(when-not (get-in @trace-db/app-db [:settings :show-panel?])
-         (trace-rf/dispatch [:settings/user-toggle-panel]))
-      (js/setTimeout 100)))
+;; open re-frame-trace panel (after a timeout, to make sure it's state has loaded)
+(-> #(when-not (get-in @trace-db/app-db [:settings :show-panel?])
+       (trace-rf/dispatch [:settings/user-toggle-panel]))
+(js/setTimeout 100)))
