@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "flash",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authcognito162f723e",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "schemaGraphql": "s3://flash-20181027141010-deployment/amplify-appsync-files/schema.graphql.1540682807869",
+    "ResolverBucket": "flash-20181027141010-deployment",
+    "ResolverRootKey": "amplify-appsync-files",
+    "DeploymentTimestamp": "1540682807869"
+}

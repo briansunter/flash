@@ -27,7 +27,7 @@
 
                                        ;; just for this demo, normally you don't use re-frame-trace
                                        ;; in production so you can do an :advanced compile.
-                                       :optimizations :whitespace}
+                                       :optimizations :advanced}
                     :devtools {:http-root "docs"
                                :http-handler shadow.http.push-state/handle
                                :http-port 8700

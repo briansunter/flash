@@ -1,0 +1,111 @@
+type Mutation {
+  createCard(input: CreateCardInput!): Card
+  updateCard(input: UpdateCardInput!): Card
+  deleteCard(input: DeleteCardInput!): Card
+}
+
+type Query {
+  getCard(id: ID!): Card
+  listCards(filter: ModelCardFilterInput, limit: Int, nextToken: String): ModelCardConnection
+}
+
+type Subscription {
+  onCreateCard: Card @aws_subscribe(mutations: ["createCard"])
+  onUpdateCard: Card @aws_subscribe(mutations: ["updateCard"])
+  onDeleteCard: Card @aws_subscribe(mutations: ["deleteCard"])
+}
+
+type Card {
+  id: ID!
+  name: String!
+  description: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelCardConnection {
+  items: [Card]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  contains: Int
+  notContains: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  contains: Float
+  notContains: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelCardFilterInput {
+  id: ModelIDFilterInput
+  name: ModelStringFilterInput
+  description: ModelStringFilterInput
+  and: [ModelCardFilterInput]
+  or: [ModelCardFilterInput]
+  not: ModelCardFilterInput
+}
+
+input CreateCardInput {
+  name: String!
+  description: String
+}
+
+input UpdateCardInput {
+  id: ID!
+  name: String
+  description: String
+}
+
+input DeleteCardInput {
+  id: ID
+}
