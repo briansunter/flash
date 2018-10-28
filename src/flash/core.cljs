@@ -3,6 +3,7 @@
   (:require
    [re-view.re-frame-simple :as db :include-macros true]
    [re-frame.core :as re-frame]
+   [clojure.walk :refer [keywordize-keys]]
    [reagent.core :as reagent]
    ;; this is re-frame-trace's separate instance of re-frame
    [mranderson047.re-frame.v0v10v2.re-frame.db :as trace-db]
@@ -30,8 +31,8 @@
  :graphql-query
  (fn [{:keys [on-success on-failure query]}]
    (-> (.graphql API (graphqlOperation query))
-       (.then #(on-success (js->clj %)))
-       (.catch #(on-failure (js->clj %)))
+       (.then #(on-success (keywordize-keys (js->clj %))))
+       (.catch #(on-failure (keywordize-keys (js->clj %))))
        )))
 
 (re-frame/reg-event-db
