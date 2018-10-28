@@ -147,10 +147,10 @@
 							"Outputs.UserPoolId"
 						]
 					},
-					"schemaGraphql": "s3://flash-20181027141010-deployment/amplify-appsync-files/schema.graphql.1540695803879",
+					"schemaGraphql": "s3://flash-20181027141010-deployment/amplify-appsync-files/schema.graphql.1540708305789",
 					"ResolverBucket": "flash-20181027141010-deployment",
 					"ResolverRootKey": "amplify-appsync-files",
-					"DeploymentTimestamp": "1540695803879"
+					"DeploymentTimestamp": "1540708305789"
 				}
 			}
 		}
