@@ -11,8 +11,15 @@
    ["../aws-exports" :default aws-exports]
    ["aws-amplify" :default amplify :refer (API,graphqlOperation)]
    ["aws-amplify-react" :refer (withAuthenticator)]
+   ["react-infinite" :as ReactInfinite]
+   ["@material-ui/core/Card" :default Card]
+   [flash.routes :refer [app-routes]]
    ))
 
+
+(def material-card (reagent/adapt-react-class Card))
+
+(def react-infinite (reagent/adapt-react-class ReactInfinite))
 
 (def listCardsQuery
   "
@@ -32,36 +39,57 @@
  (fn [{:keys [on-success on-failure query]}]
    (-> (.graphql API (graphqlOperation query))
        (.then #(on-success (keywordize-keys (js->clj %))))
-       (.catch #(on-failure (keywordize-keys (js->clj %))))
-       )))
+       (.catch #(on-failure (keywordize-keys (js->clj %)))))))
 
 (re-frame/reg-event-db
  :loaded-cards
- (fn [db [_ items]]
-   (assoc-in db [:cards] items)))
+ (fn [db [_ {:keys [data]}]]
+   (assoc-in db [:cards] (:items (:listCards data)))))
+
+(re-frame/reg-event-db
+ :nav/set-current-page
+ (fn [db [_ current-page]]
+   (assoc-in db [:current-page] current-page)))
 
 (re-frame/reg-event-fx
-:load-cards
-(fn [cofx [_ a]]
-  {:db       (assoc (:db cofx) :flag  a)
-   :graphql-query {:on-success #(re-frame/dispatch [:loaded-cards %])
-                   :query listCardsQuery
-                   }}))
+ :load-cards
+ (fn [cofx [_ a]]
+   {:db       (assoc (:db cofx) :flag  a)
+    :graphql-query {:on-success #(re-frame/dispatch [:loaded-cards %])
+                    :query listCardsQuery}}))
 
 (db/defupdate :initialize
-"Initialize the `db` with the preselected emoji as counter IDs."
-[db]
-{:cards []})
+  [db]
+  {:cards []})
 
-(defn root-view-3 [props]
-(re-frame/dispatch [:load-cards])
-(let [cards (db/get :cards)]
-  [:p (str cards)])  )
+(defn card
+  [c]
+  [material-card [:p (str (js->clj (:name c)))]])
+
+(defn cards-list
+  [cards]
+  [react-infinite
+   {:use-window-as-scroll-container true
+    :element-height 40}
+   (map-indexed (fn [ i c ]
+                  ^{:key i}
+                  [card c]
+                  )(take 10000 (cycle cards))
+                )])
+
+(defn cards-view [props]
+  (re-frame/dispatch [:load-cards])
+  (let [cards (db/get :cards)]
+    [cards-list cards]))
+
+(defn main-view [props]
+(let [current-page (db/get :current-page)]
+  [cards-view props]))
 
 (def root-view
 (reagent/adapt-react-class
  (withAuthenticator
-  (reagent/reactify-component root-view-3) true)))
+  (reagent/reactify-component main-view) true)))
 
 (defn ^:export render []
 (reagent/render [root-view]
@@ -70,6 +98,7 @@
 (defn ^:export init []
 (.configure amplify aws-exports)
 (db/dispatch [:initialize])
+(app-routes)
 (render)
 (-> #(when-not (get-in @trace-db/app-db [:settings :show-panel?])
        (trace-rf/dispatch [:settings/user-toggle-panel]))

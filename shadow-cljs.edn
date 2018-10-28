@@ -4,6 +4,7 @@
                 [cider/cider-nrepl "0.18.0"]
                 [bidi "2.1.4"]
                 [secretary "1.2.3"]
+                [venantius/accountant "0.2.4"]
                 [binaryage/devtools "0.9.7"]]
 
  :source-paths ["src"]
@@ -27,7 +28,7 @@
 
                                        ;; just for this demo, normally you don't use re-frame-trace
                                        ;; in production so you can do an :advanced compile.
-                                       :optimizations :whitespace}
+                                       :optimizations :advanced}
                     :devtools {:http-root "docs"
                                :http-handler shadow.http.push-state/handle
                                :http-port 8700
