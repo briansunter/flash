@@ -57,6 +57,7 @@
     id
     name
     description
+    tags
   }
   }
   ")

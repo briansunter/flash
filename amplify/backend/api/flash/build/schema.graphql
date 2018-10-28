@@ -19,6 +19,7 @@ type Card {
   id: ID!
   name: String!
   description: String
+  tags: [String!]
 }
 
 enum ModelSortDirection {
@@ -90,6 +91,7 @@ input ModelCardFilterInput {
   id: ModelIDFilterInput
   name: ModelStringFilterInput
   description: ModelStringFilterInput
+  tags: ModelStringFilterInput
   and: [ModelCardFilterInput]
   or: [ModelCardFilterInput]
   not: ModelCardFilterInput
@@ -98,12 +100,14 @@ input ModelCardFilterInput {
 input CreateCardInput {
   name: String!
   description: String
+  tags: [String!]
 }
 
 input UpdateCardInput {
   id: ID!
   name: String
   description: String
+  tags: [String!]
 }
 
 input DeleteCardInput {

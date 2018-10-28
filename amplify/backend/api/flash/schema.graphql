@@ -2,4 +2,5 @@ type Card @model {
   id: ID!
   name: String!
   description: String
+  tags: [String!]
 }
