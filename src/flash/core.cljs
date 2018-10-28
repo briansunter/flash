@@ -1,10 +1,9 @@
-(ns shadow-re-frame.simple
+(ns flash.core
   "Example of `re-frame-simple`, an alternate `re-frame` syntax for simple use cases."
   (:require
    [re-view.re-frame-simple :as db :include-macros true]
    [re-frame.core :as re-frame]
    [reagent.core :as reagent]
-   [shadow-re-frame.welcome :as text]
    ;; this is re-frame-trace's separate instance of re-frame
    [mranderson047.re-frame.v0v10v2.re-frame.db :as trace-db]
    [mranderson047.re-frame.v0v10v2.re-frame.core :as trace-rf]
@@ -13,7 +12,6 @@
    ["aws-amplify-react" :refer (withAuthenticator)]
    ))
 
-(.configure amplify aws-exports)
 
 (def listCardsQuery
   "
@@ -69,12 +67,9 @@
                 (js/document.getElementById "shadow-re-frame")))
 
 (defn ^:export init []
-
+(.configure amplify aws-exports)
 (db/dispatch [:initialize])
 (render)
-
-
-;; open re-frame-trace panel (after a timeout, to make sure it's state has loaded)
 (-> #(when-not (get-in @trace-db/app-db [:settings :show-panel?])
        (trace-rf/dispatch [:settings/user-toggle-panel]))
     (js/setTimeout 100)))

@@ -19,7 +19,7 @@
                                      [devtools.preload
                                       day8.re-frame.trace.preload
 
-                                      shadow-re-frame.simple]}}
+                                      flash.core]}}
                     :output-dir "docs/js/compiled"
                     :asset-path "/js/compiled"
                     :compiler-options {:closure-warnings {:global-this :off}
@@ -27,7 +27,7 @@
 
                                        ;; just for this demo, normally you don't use re-frame-trace
                                        ;; in production so you can do an :advanced compile.
-                                       :optimizations :advanced}
+                                       :optimizations :whitespace}
                     :devtools {:http-root "docs"
                                :http-handler shadow.http.push-state/handle
                                :http-port 8700
