@@ -21,8 +21,10 @@
    ["@material-ui/core/IconButton" :default IconButton]
    ["@material-ui/icons/Menu" :default Menu]
    ["@material-ui/core/Typography" :default Typography]
+   ["material-ui-chip-input" :default ChipInput]
    [flash.routes :refer [app-routes path-for-page]]))
 
+(def chip-input (reagent/adapt-react-class ChipInput))
 (def typography (reagent/adapt-react-class Typography))
 (def menu-icon (reagent/adapt-react-class Menu))
 (def icon-button (reagent/adapt-react-class IconButton))
@@ -49,10 +51,11 @@
 
 (def createCardMutation
   "
-  mutation createCard($name:String! $description: String!) {
+  mutation createCard($name:String! $description: String, $tags:[String!]) {
   createCard(input:{
     name:$name
     description:$description
+    tags:$tags
   }){
     id
     name
@@ -82,7 +85,7 @@
    (-> (update-in db [:cards] #(conj % (:createCard data)))
        (assoc :add-card/front "")
        (assoc :add-card/back "")
-       )))
+       (assoc :add-card/tags []))))
 
 (re-frame/reg-event-fx
  :create-card
@@ -96,7 +99,6 @@
  :loaded-cards
  (fn [db [_ {:keys [data]}]]
    (assoc-in db [:cards] (:items (:listCards data)))))
-
 
 (re-frame/reg-event-fx
  :load-cards
@@ -112,7 +114,8 @@
 
 (db/defupdate :initialize
   [db]
-  {:cards []})
+  {:cards []
+   :add-card/tags ["foo"]})
 
 (defn card
   [c]
@@ -162,7 +165,8 @@
 (defn add-card-view []
   (re-frame/dispatch [:load-cards])
   (let [front (db/get :add-card/front)
-        back (db/get :add-card/back)]
+        back (db/get :add-card/back)
+        tags (db/get :add-card/tags)]
     [:div
      {:style {:flex-direction :column
               :display :flex}}
@@ -172,18 +176,21 @@
        {:style {:justify-content :space-between}}
        [:div]
        [button {:style {:color "white"}
-                :on-click #(re-frame/dispatch [:create-card {:name front :description back}])
-
+                :on-click #(re-frame/dispatch [:create-card {:name front :description back :tags tags}])
                 } "Save"]]]
      [text-field {:placeholder "Front"
                   :on-change #(db/assoc! :add-card/front (-> % .-target .-value))
                   :value front
-
-                  } ]
+                  }]
      [text-field {:placeholder "Back"
                   :on-change #(db/assoc! :add-card/back (-> % .-target .-value))
                   :value back
-                  } ]]))
+                  }]
+     [chip-input {:value (clj->js tags)
+                  :on-add (fn [c] (db/update! :add-card/tags #(conj % c)))
+                  :on-delete (fn [c] (db/update! :add-card/tags pop))
+                  }]
+     ]))
 
 (defn main-view [props]
   (let [current-page (db/get :current-page)]
