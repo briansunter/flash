@@ -35,11 +35,21 @@
         true :not-found}
    true :not-found})
 
+(def review-routes
+  {"" :reviews
+   "/" {"" :reviews
+        "add" :add-review
+        [:tag ""] :view-review
+        [:tag "/"] :view-review
+        true :not-found}
+   true :not-found})
+
 (def routes
   [
    "/" {"" :cards
         "cards" card-routes
         "tags" tag-routes
+        "reviews" review-routes
         true :not-found}
    "" :actions
    true :not-found])

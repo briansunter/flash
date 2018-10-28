@@ -6,8 +6,8 @@
    [clojure.walk :refer [keywordize-keys]]
    [reagent.core :as reagent]
    ;; this is re-frame-trace's separate instance of re-frame
-   [mranderson047.re-frame.v0v10v2.re-frame.db :as trace-db]
-   [mranderson047.re-frame.v0v10v2.re-frame.core :as trace-rf]
+   #_[mranderson047.re-frame.v0v10v2.re-frame.db :as trace-db]
+   #_[mranderson047.re-frame.v0v10v2.re-frame.core :as trace-rf]
    ["../aws-exports" :default aws-exports]
    ["aws-amplify" :default amplify :refer (API,graphqlOperation)]
    ["aws-amplify-react" :refer (withAuthenticator)]
@@ -15,6 +15,7 @@
    ["@material-ui/icons/Add" :default AddIcon]
    ["@material-ui/core/Button" :default Button]
    ["@material-ui/core/Card" :default Card]
+   ["@material-ui/core/CardContent" :default CardContent]
    ["@material-ui/core/TextField" :default TextField]
    ["@material-ui/core/AppBar" :default AppBar]
    ["@material-ui/core/Toolbar" :default Toolbar]
@@ -40,6 +41,7 @@
 (def button (reagent/adapt-react-class Button))
 (def add-icon (reagent/adapt-react-class AddIcon))
 (def material-card (reagent/adapt-react-class Card))
+(def card-content (reagent/adapt-react-class CardContent))
 (def react-infinite (reagent/adapt-react-class ReactInfinite))
 
 (def listCardsQuery
@@ -121,6 +123,7 @@
 (db/defupdate :initialize
   [db]
   {:cards []
+   :reviews/reviews [{:card {:name "Brian"} :type :info}]
    :add-card/tags ["foo"]})
 
 (defn card
@@ -167,7 +170,6 @@
      [add-button]]
     ))
 
-
 (defn add-card-view []
   (re-frame/dispatch [:load-cards])
   (let [front (db/get :add-card/front)
@@ -182,27 +184,39 @@
        {:style {:justify-content :space-between}}
        [:div]
        [button {:style {:color "white"}
-                :on-click #(re-frame/dispatch [:create-card {:name front :description back :tags tags}])
-                } "Save"]]]
+                :on-click #(re-frame/dispatch [:create-card {:name front :description back :tags tags}])} "Save"]]]
      [text-field {:placeholder "Front"
                   :on-change #(db/assoc! :add-card/front (-> % .-target .-value))
-                  :value front
-                  }]
+                  :value front}]
      [text-field {:placeholder "Back"
                   :on-change #(db/assoc! :add-card/back (-> % .-target .-value))
-                  :value back
-                  }]
+                  :value back}]
      [chip-input {:value (clj->js tags)
                   :on-add (fn [c] (db/update! :add-card/tags #(conj % c)))
                   :on-delete (fn [c] (db/update! :add-card/tags pop))
-                  }]
-     ]))
+                  }]]))
+
+(defn reviews-view
+  []
+  (let [reviews (db/get :reviews/reviews)]
+    [:div
+    [list
+     {:style {:justify-content :center
+              :display :flex}}
+     (for [r reviews]
+       [material-card
+        {:style {:width "80vw"}}
+        [card-content
+         {:style {:justify-content :center
+                  :display :flex}}
+         [:div(str r)]]])]]))
 
 (defn main-view [props]
   (let [current-page (db/get :current-page)]
     (case current-page
       :cards [cards-view props]
-      :add-card [add-card-view])
+      :add-card [add-card-view]
+      :reviews  [reviews-view])
     ))
 
 (def root-view
