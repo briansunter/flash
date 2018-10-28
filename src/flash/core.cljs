@@ -22,8 +22,14 @@
    ["@material-ui/icons/Menu" :default Menu]
    ["@material-ui/core/Typography" :default Typography]
    ["material-ui-chip-input" :default ChipInput]
+   ["@material-ui/core/List" :default List]
+   ["@material-ui/core/Divider" :default Divider]
+   ["@material-ui/core/ListItem" :default ListItem]
    [flash.routes :refer [app-routes path-for-page]]))
 
+(def divider (reagent/adapt-react-class Divider))
+(def list (reagent/adapt-react-class List))
+(def list-item (reagent/adapt-react-class ListItem))
 (def chip-input (reagent/adapt-react-class ChipInput))
 (def typography (reagent/adapt-react-class Typography))
 (def menu-icon (reagent/adapt-react-class Menu))
@@ -119,9 +125,11 @@
 
 (defn card
   [c]
-  [material-card [:div
-                  [:p (str (js->clj (:name c)))]
-                  ]])
+  [:div
+   [list-item
+    {:button true}
+    [:p (str (js->clj (:name c)))]]
+   [divider]])
 
 (defn add-button
   []
@@ -138,9 +146,7 @@
 
 (defn cards-list
   [cards]
-  [:div
-   {:use-window-as-scroll-container true
-    :element-height 40}
+  [list
    (for [c cards]
      ^{:key (:id c)}
      [card c]
