@@ -27,14 +27,14 @@
 
                                        ;; just for this demo, normally you don't use re-frame-trace
                                        ;; in production so you can do an :advanced compile.
-                                       :optimizations :advanced}
+                                       :optimizations :whitespace}
                     :devtools {:http-root "docs"
                                :http-handler shadow.http.push-state/handle
                                :http-port 8700
                                :after-load shadow-re-frame.simple/render
                                :preloads [devtools.preload
                                           day8.re-frame.trace.preload]}}
-          :release {:target :release
+          :release {:target :browser
                     :modules {:base {:entries
                                      [flash.core]}}
                     :output-dir "docs/js/compiled"
