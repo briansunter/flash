@@ -2,17 +2,25 @@ type Mutation {
   createCard(input: CreateCardInput!): Card
   updateCard(input: UpdateCardInput!): Card
   deleteCard(input: DeleteCardInput!): Card
+  createReview(input: CreateReviewInput!): Review
+  updateReview(input: UpdateReviewInput!): Review
+  deleteReview(input: DeleteReviewInput!): Review
 }
 
 type Query {
   getCard(id: ID!): Card
   listCards(filter: ModelCardFilterInput, limit: Int, nextToken: String): ModelCardConnection
+  getReview(id: ID!): Review
+  listReviews(filter: ModelReviewFilterInput, limit: Int, nextToken: String): ModelReviewConnection
 }
 
 type Subscription {
   onCreateCard: Card @aws_subscribe(mutations: ["createCard"])
   onUpdateCard: Card @aws_subscribe(mutations: ["updateCard"])
   onDeleteCard: Card @aws_subscribe(mutations: ["deleteCard"])
+  onCreateReview: Review @aws_subscribe(mutations: ["createReview"])
+  onUpdateReview: Review @aws_subscribe(mutations: ["updateReview"])
+  onDeleteReview: Review @aws_subscribe(mutations: ["deleteReview"])
 }
 
 type Card {
@@ -20,6 +28,7 @@ type Card {
   name: String!
   description: String
   tags: [String!]
+  reviews(filter: ModelReviewFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelReviewConnection
 }
 
 enum ModelSortDirection {
@@ -111,5 +120,38 @@ input UpdateCardInput {
 }
 
 input DeleteCardInput {
+  id: ID
+}
+
+type Review {
+  id: ID!
+  type: String!
+}
+
+type ModelReviewConnection {
+  items: [Review]
+  nextToken: String
+}
+
+input ModelReviewFilterInput {
+  id: ModelIDFilterInput
+  type: ModelStringFilterInput
+  and: [ModelReviewFilterInput]
+  or: [ModelReviewFilterInput]
+  not: ModelReviewFilterInput
+}
+
+input CreateReviewInput {
+  type: String!
+  cardReviewsId: ID
+}
+
+input UpdateReviewInput {
+  id: ID!
+  type: String
+  cardReviewsId: ID
+}
+
+input DeleteReviewInput {
   id: ID
 }

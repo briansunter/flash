@@ -19,7 +19,6 @@
                                      ;; demo I want them available in the release.
                                      [devtools.preload
                                       day8.re-frame.trace.preload
-
                                       flash.core]}}
                     :output-dir "docs/js/compiled"
                     :asset-path "/js/compiled"
@@ -34,4 +33,11 @@
                                :http-port 8700
                                :after-load shadow-re-frame.simple/render
                                :preloads [devtools.preload
-                                          day8.re-frame.trace.preload]}}}}
+                                          day8.re-frame.trace.preload]}}
+          :release {:target :release
+                    :modules {:base {:entries
+                                     [flash.core]}}
+                    :output-dir "docs/js/compiled"
+                    :asset-path "/js/compiled"
+                    :compiler-options {:closure-warnings {:global-this :off}
+                                       :optimizations :advanced}}}}

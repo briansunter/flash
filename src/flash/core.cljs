@@ -26,8 +26,10 @@
    ["@material-ui/core/List" :default List]
    ["@material-ui/core/Divider" :default Divider]
    ["@material-ui/core/ListItem" :default ListItem]
+   ["@material-ui/core/CardActions" :default CardActions]
    [flash.routes :refer [app-routes path-for-page]]))
 
+(def card-actions (reagent/adapt-react-class CardActions))
 (def divider (reagent/adapt-react-class Divider))
 (def list (reagent/adapt-react-class List))
 (def list-item (reagent/adapt-react-class ListItem))
@@ -73,6 +75,18 @@
   }
   ")
 
+(def createReviewMutation
+  "
+  mutation createReview($type:String! $cardReviewsId: ID!) {
+  createReview(input:{
+    type:$type
+    cardReviewsId:$cardReviewsId
+  }){
+    id
+  }
+  }
+  ")
+
 (re-frame/reg-fx
  :graphql-query
  (fn [{:keys [on-success on-failure query]}]
@@ -102,7 +116,18 @@
     :graphql-mutation {:on-success #(re-frame/dispatch [:created-card %])
                        :mutation createCardMutation
                        :details (clj->js c)}}))
+(re-frame/reg-event-db
+ :created-review
+ (fn [db [_ {:keys [data]}]]
+   (-> (update-in db [:reviews/reviews] #(conj % (:createReview data))))))
 
+(re-frame/reg-event-fx
+ :review/create-review
+ (fn [cofx [_ c]]
+   {:db       (:db cofx)
+    :graphql-mutation {:on-success #(re-frame/dispatch [:created-review %])
+                       :mutation createReviewMutation
+                       :details (clj->js c)}}))
 (re-frame/reg-event-db
  :loaded-cards
  (fn [db [_ {:keys [data]}]]
@@ -123,7 +148,6 @@
 (db/defupdate :initialize
   [db]
   {:cards []
-   :reviews/reviews [{:card {:name "Brian"} :type :info}]
    :add-card/tags ["foo"]})
 
 (defn card
@@ -142,18 +166,15 @@
            :color "primary"
            :variant "fab"
            :size "medium"
-           :href (path-for-page :add-card)
-           }
-   [add-icon]
-   ])
+           :href (path-for-page :add-card)}
+   [add-icon]])
 
 (defn cards-list
   [cards]
   [list
    (for [c cards]
      ^{:key (:id c)}
-     [card c]
-     )])
+     [card c])])
 
 (defn cards-view [props]
   (re-frame/dispatch [:load-cards])
@@ -167,8 +188,7 @@
        [typography {:variant :h6 :color :inherit}
         "My Cards"]]]
      [cards-list cards]
-     [add-button]]
-    ))
+     [add-button]]))
 
 (defn add-card-view []
   (re-frame/dispatch [:load-cards])
@@ -178,8 +198,7 @@
     [:div
      {:style {:flex-direction :column
               :display :flex}}
-     [app-bar {:position :sticky
-               }
+     [app-bar {:position :sticky}
       [tool-bar
        {:style {:justify-content :space-between}}
        [:div]
@@ -193,31 +212,46 @@
                   :value back}]
      [chip-input {:value (clj->js tags)
                   :on-add (fn [c] (db/update! :add-card/tags #(conj % c)))
-                  :on-delete (fn [c] (db/update! :add-card/tags pop))
-                  }]]))
+                  :on-delete (fn [c] (db/update! :add-card/tags pop))}]]))
+
+(re-frame/reg-sub
+ :reviews/suggested-reviews
+ (fn [db _]
+   (map (fn [c] {:type "info" :card c :cardReviewsId (c :id)}) (:cards db))))
 
 (defn reviews-view
   []
-  (let [reviews (db/get :reviews/reviews)]
+  (re-frame/dispatch [:load-cards])
+  (let [reviews (re-frame/subscribe [:reviews/suggested-reviews])]
     [:div
-    [list
-     {:style {:justify-content :center
-              :display :flex}}
-     (for [r reviews]
-       [material-card
-        {:style {:width "80vw"}}
-        [card-content
-         {:style {:justify-content :center
-                  :display :flex}}
-         [:div(str r)]]])]]))
+     [list
+      {:style {:justify-content :center
+               :flex-direction :column
+               :display :flex}}
+      (for [r @reviews]
+        [material-card
+         {:style {:width "80vw"
+                  :margin-bottom "2em"}}
+         [card-content
+          {:style {:justify-content :center
+                   :display :flex}}
+          [:h1 (str (:name (:card r)))
+           ]]
+         [card-actions
+          {:style {:display :flex
+                   :justify-content :flex-end}}
+          [button
+           {:on-click #(re-frame/dispatch [:review/create-review {:type (r :type)
+                                                                  :cardReviewsId (r :cardReviewsId)}])}
+           "OK"]]
+         ])]]))
 
 (defn main-view [props]
   (let [current-page (db/get :current-page)]
     (case current-page
       :cards [cards-view props]
       :add-card [add-card-view]
-      :reviews  [reviews-view])
-    ))
+      :reviews  [reviews-view])))
 
 (def root-view
   (reagent/adapt-react-class

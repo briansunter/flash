@@ -1,6 +1,15 @@
-type Card @model {
+type Card @model
+    @auth(rules: [{ allow: owner }])
+{
   id: ID!
   name: String!
   description: String
   tags: [String!]
+  reviews: [Review!] @connection
+}
+
+type Review @model
+{
+id: ID!
+type: String!
 }
