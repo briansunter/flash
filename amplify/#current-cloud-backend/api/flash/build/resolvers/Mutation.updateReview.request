@@ -1,7 +1,7 @@
-#if( $authCondition )
+#if( $authCondition && $authCondition.expression != "" )
   #set( $condition = $authCondition )
-$util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#id)"))
-$util.qr($condition.expressionNames.put("#id", "id"))
+  $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#id)"))
+  $util.qr($condition.expressionNames.put("#id", "id"))
 #else
   #set( $condition = {
   "expression": "attribute_exists(#id)",
@@ -17,8 +17,8 @@ $util.qr($context.args.input.put("__typename", "Review"))
 ## Update condition if type is @versioned **
 #if( $versionedCondition )
   $util.qr($condition.put("expression", "($condition.expression) AND $versionedCondition.expression"))
-    $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
-    $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
 #end
 #set( $expNames = {} )
 #set( $expValues = {} )
@@ -28,17 +28,17 @@ $util.qr($context.args.input.put("__typename", "Review"))
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, ["id"]).entrySet() )
   #if( $util.isNull($entry.value) )
     #set( $discard = $expRemove.add("#$entry.key") )
-$util.qr($expNames.put("#$entry.key", "$entry.key"))
+    $util.qr($expNames.put("#$entry.key", "$entry.key"))
   #else
     $util.qr($expSet.put("#$entry.key", ":$entry.key"))
-$util.qr($expNames.put("#$entry.key", "$entry.key"))
-$util.qr($expValues.put(":$entry.key", $util.dynamodb.toDynamoDB($entry.value)))
+    $util.qr($expNames.put("#$entry.key", "$entry.key"))
+    $util.qr($expValues.put(":$entry.key", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
 #set( $expression = "" )
 #if( !$expSet.isEmpty() )
-    #set( $expression = "SET" )
-      #foreach( $entry in $expSet.entrySet() )
+  #set( $expression = "SET" )
+  #foreach( $entry in $expSet.entrySet() )
     #set( $expression = "$expression $entry.key = $entry.value" )
     #if( $foreach.hasNext() )
       #set( $expression = "$expression," )
@@ -46,8 +46,8 @@ $util.qr($expValues.put(":$entry.key", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
 #if( !$expAdd.isEmpty() )
-    #set( $expression = "$expression ADD" )
-      #foreach( $entry in $expAdd.entrySet() )
+  #set( $expression = "$expression ADD" )
+  #foreach( $entry in $expAdd.entrySet() )
     #set( $expression = "$expression $entry.key $entry.value" )
     #if( $foreach.hasNext() )
       #set( $expression = "$expression," )
@@ -55,8 +55,8 @@ $util.qr($expValues.put(":$entry.key", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
 #if( !$expRemove.isEmpty() )
-    #set( $expression = "$expression REMOVE" )
-      #foreach( $entry in $expRemove )
+  #set( $expression = "$expression REMOVE" )
+  #foreach( $entry in $expRemove )
     #set( $expression = "$expression $entry" )
     #if( $foreach.hasNext() )
       #set( $expression = "$expression," )
@@ -66,10 +66,10 @@ $util.qr($expValues.put(":$entry.key", $util.dynamodb.toDynamoDB($entry.value)))
 #set( $update = {} )
 $util.qr($update.put("expression", "$expression"))
 #if( !$expNames.isEmpty() )
-$util.qr($update.put("expressionNames", $expNames))
+  $util.qr($update.put("expressionNames", $expNames))
 #end
 #if( !$expValues.isEmpty() )
-$util.qr($update.put("expressionValues", $expValues))
+  $util.qr($update.put("expressionValues", $expValues))
 #end
 {
   "version": "2017-02-28",

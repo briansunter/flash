@@ -15,23 +15,23 @@
   },
   "scanIndexForward":   #if( $context.args.sortDirection )
     #if( $context.args.sortDirection == "ASC" )
-  true
-#else
-  false
-#end
+true
+    #else
+false
+    #end
   #else
-    true
+true
   #end,
   "filter":   #if( $context.args.filter )
-    $util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
   #else
-    null
+null
   #end,
   "limit": $limit,
   "nextToken":   #if( $context.args.nextToken )
-    "$context.args.nextToken"
+"$context.args.nextToken"
   #else
-    null
+null
   #end,
   "index": "gsi-Card.reviews"
 }

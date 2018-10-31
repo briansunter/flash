@@ -13,3 +13,14 @@ type Review @model
 id: ID!
 type: String!
 }
+
+  type SuggestedReview {
+  id: ID!
+  type: String!
+  card: Card!
+  cardReviewsId: ID!
+}
+
+type Query {
+  listSuggestedReviews(limit: Int!): [SuggestedReview!]
+  }

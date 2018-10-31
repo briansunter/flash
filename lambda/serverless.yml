@@ -1,0 +1,16 @@
+service: lambda
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+
+functions:
+  echo:
+    cljs: lambda.core/suggested-reviews
+    events:
+      - http:
+          path: suggestedReviews
+          method: get
+
+plugins:
+  - serverless-cljs-plugin

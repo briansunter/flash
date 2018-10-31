@@ -1,4 +1,4 @@
-## START: Prepare DynamoDB PutItem Request. **
+## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put("createdAt", $util.time.nowISO8601()))
 $util.qr($context.args.input.put("updatedAt", $util.time.nowISO8601()))
 $util.qr($context.args.input.put("__typename", "Review"))
@@ -18,4 +18,4 @@ $util.qr($context.args.input.put("__typename", "Review"))
     }
   }
 }
-## END: Prepare DynamoDB PutItem Request. **
+## [End] Prepare DynamoDB PutItem Request. **

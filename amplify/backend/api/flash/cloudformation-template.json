@@ -24,7 +24,7 @@
         },
         "AuthCognitoUserPoolName": {
             "Type": "String",
-            "Description": "The name of the AppSync API",
+            "Description": "The name of the user pool.",
             "Default": "AppSyncUserPool"
         },
         "AuthCognitoUserPoolMobileClientName": {
@@ -1426,9 +1426,6 @@
         "AuthCognitoUserPool": {
             "Type": "AWS::Cognito::UserPool",
             "Properties": {
-                "AliasAttributes": [
-                    "email"
-                ],
                 "UserPoolName": {
                     "Ref": "AuthCognitoUserPoolName"
                 },
@@ -1441,6 +1438,13 @@
                         "RequireUppercase": true
                     }
                 },
+                "Schema": [
+                    {
+                        "Name": "email",
+                        "Required": true,
+                        "Mutable": true
+                    }
+                ],
                 "AutoVerifiedAttributes": [
                     "email"
                 ]
